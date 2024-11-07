@@ -1,20 +1,24 @@
+import os
 import boto3
+import pygame
+import io
 
-# Create a Polly client
 polly = boto3.client('polly')
 
-# The text you want to convert to speech
-text = "Hello, this is an example of using Amazon Polly to speak a sentence."
+text = "Hello, this is an example of using Amazon Polly to speak a sentence directly on your computer."
 
-# Generate the speech audio
 response = polly.synthesize_speech(
     Text=text,
     OutputFormat='mp3',
     VoiceId='Joanna'
 )
 
-# Save the audio to a file
-with open('output.mp3', 'wb') as f:
-    f.write(response['AudioStream'].read())
+pygame.mixer.init()
 
-print('Speech audio saved to output.mp3. You can now play the file on your computer.')
+sound = pygame.mixer.Sound(io.BytesIO(response['AudioStream'].read()))
+sound.play()
+
+while pygame.mixer.get_busy():
+    continue
+
+print('Finished playing the audio.')
